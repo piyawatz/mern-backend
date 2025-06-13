@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                          // รองรับ async/await
+    "module": "CommonJS",                        // ใช้กับ Node.js
+    "moduleResolution": "node",
+    "outDir": "./dist",                          // โฟลเดอร์ที่ใช้เก็บไฟล์ .js หลัง compile
+    "rootDir": "./src",                          // ต้นทางของไฟล์ TypeScript
+    "strict": true,                              // เปิด strict mode ทั้งหมด
+    "esModuleInterop": true,                     // รองรับ import module แบบ CommonJS
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true                         // ข้ามการเช็ค type ของ dependency
+  },
+  "include": ["src"],                            // โฟลเดอร์ที่จะ compile
+  "exclude": ["node_modules", "dist"]            // โฟลเดอร์ที่ไม่ compile
+}
