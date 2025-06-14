@@ -61,7 +61,6 @@ export const getMemberById = async (req: Request, res: Response): Promise<void> 
     }
 };
 
-
 export const updateMember = async (req: Request, res: Response): Promise<void> => {
     const updatedMember = await memberService.updateMemberById(req.params.id, req.body);
     res.json({ status: 'success', data: updatedMember });
