@@ -52,8 +52,7 @@ export const getMemberById = async (req: Request, res: Response): Promise<void> 
             return;
         }
 
-        const { password, ...safeMember } = member.toObject(); // ลบ password ออก
-        res.json({ status: "success", data: safeMember });
+        res.json({ status: "success", data: member });
 
     } catch (error: any) {
         console.error(error);
@@ -62,7 +61,11 @@ export const getMemberById = async (req: Request, res: Response): Promise<void> 
 };
 
 export const updateMember = async (req: Request, res: Response): Promise<void> => {
-    const updatedMember = await memberService.updateMemberById(req.params.id, req.body);
+    const data: any = {
+        fullName: req.body.fullName,
+        telephone: req.body.telephone,
+    }
+    const updatedMember = await memberService.updateMemberById(req.params.id, data);
     res.json({ status: 'success', data: updatedMember });
 };
 
