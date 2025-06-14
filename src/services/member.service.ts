@@ -12,24 +12,23 @@ export async function getNextMemberCode(): Promise<string> {
 }
 
 export const createMember = async (data: any) => {
-  // เช็ค username ซ้ำ
-  const existingUser = await MemberModel.findOne({ username: data.username });
-  if (existingUser) {
-    throw new Error('Username already exists');
-  }
+    // เช็ค username ซ้ำ
+    const existingMember = await MemberModel.findOne({ username: data.username });
+    if (existingMember) {
+        throw new Error("Username already exists");
+    }
 
-  const memberCode = await getNextMemberCode();
+    const memberCode = await getNextMemberCode();
+    const hashedPassword = await bcrypt.hash(data.password, 10);
 
-  const hashedPassword = await bcrypt.hash(data.password, 10);
-  const member = new MemberModel({
-    memberCode,
-    ...data,
-    password: hashedPassword,
-  });
+    const member = new MemberModel({
+        ...data,
+        memberCode,
+        password: hashedPassword,
+    });
 
-  return await member.save();
+    return await member.save();
 };
-
 
 export const findMemberByUsername = async (username: string) => {
     return await MemberModel.findOne({ username });
