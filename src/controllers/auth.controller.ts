@@ -24,7 +24,7 @@ export const loginMember = async (req: Request, res: Response): Promise<void> =>
 
     if (!member) {
         res.status(401).json({ status: 'error', message: 'User not found' });
-        return;  // return แค่หยุดฟังก์ชัน ไม่ return response
+        return;
     }
 
     const isMatch = await memberService.comparePassword(password, member.password);
@@ -35,29 +35,9 @@ export const loginMember = async (req: Request, res: Response): Promise<void> =>
 
     const token = jwt.sign({ id: member._id }, JWT_SECRET, { expiresIn: '1d' });
 
-    res.json({ status: 'success', data: member, message: 'login successful', token });
+    // ลบ password ออกจาก object ก่อนส่งกลับ
+    const { password: _, ...safeMember } = member.toObject();
+
+    res.json({ status: 'success', data: safeMember, message: 'login successful', token });
 };
 
-export const getMe = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const memberId = (req as any).user.id;
-        if (!memberId) {
-            res.status(401).json({ status: 'error', message: 'Unauthorized' });
-            return;
-        }
-
-        const member = await memberService.getMemberById(memberId);
-        if (!member) {
-            res.status(404).json({ status: 'error', message: 'Member not found' });
-            return;
-        }
-
-        // ลบ password ก่อนส่งกลับ
-        const { password, ...safeMember } = member.toObject();
-
-        res.json({ status: 'success', data: safeMember });
-    } catch (error: any) {
-        console.error(error);
-        res.status(500).json({ status: 'error', message: error.message || 'Internal Server Error' });
-    }
-};
