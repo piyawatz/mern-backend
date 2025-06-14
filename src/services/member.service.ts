@@ -46,7 +46,8 @@ export const getMemberById = async (id: string) => {
     return await MemberModel.findById(id);
 };
 
-export const updateMemberById = async (id: string, data: Partial<typeof MemberModel>) => {
+
+export const updateMemberById = async (id: string, data: any) => {
     return await MemberModel.findByIdAndUpdate(id, data, { new: true });
 };
 
