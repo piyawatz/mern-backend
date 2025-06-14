@@ -4,12 +4,17 @@ import * as memberService from '../services/member.service';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export const registerMember = async (req: Request, res: Response) => {
+export const registerMember = async (req: Request, res: Response): Promise<void> => {
     try {
         const member = await memberService.createMember(req.body);
-        res.json({ status: 'success', data: member });
-    } catch {
-        res.status(500).json({ status: 'error', message: 'Register failed' });
+
+        // ลบ password ออกจาก object ก่อนส่งกลับ
+        const { password, ...safeMember } = member.toObject();
+
+        res.json({ status: "success", data: safeMember });
+    } catch (error: any) {
+        console.error(error.message);
+        res.status(500).json({ status: "error", message: error.message || "Internal Server Error" });
     }
 };
 
@@ -30,12 +35,7 @@ export const loginMember = async (req: Request, res: Response): Promise<void> =>
 
     const token = jwt.sign({ id: member._id }, JWT_SECRET, { expiresIn: '1d' });
 
-    res.json({
-        status: 'success',
-        data: member,
-        message: 'login successful',
-        token
-    });
+    res.json({ status: 'success', data: member, message: 'login successful', token });
 };
 
 export const getMembers = async (_req: Request, res: Response): Promise<void> => {
@@ -44,9 +44,23 @@ export const getMembers = async (_req: Request, res: Response): Promise<void> =>
 };
 
 export const getMemberById = async (req: Request, res: Response): Promise<void> => {
-    const member = await memberService.getMemberById(req.params.id);
-    res.json({ status: 'success', data: member });
+    try {
+        const member = await memberService.getMemberById(req.params.id);
+
+        if (!member) {
+            res.status(404).json({ status: "error", message: "Member not found" });
+            return;
+        }
+
+        const { password, ...safeMember } = member.toObject(); // ลบ password ออก
+        res.json({ status: "success", data: safeMember });
+
+    } catch (error: any) {
+        console.error(error);
+        res.status(500).json({ status: "error", message: "Internal Server Error" });
+    }
 };
+
 
 export const updateMember = async (req: Request, res: Response): Promise<void> => {
     const updatedMember = await memberService.updateMemberById(req.params.id, req.body);
